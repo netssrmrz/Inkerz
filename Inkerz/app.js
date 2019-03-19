@@ -15,6 +15,8 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+app.route("/v1/public").get(Get);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // catch 404 and forward to error handler
@@ -53,3 +55,10 @@ app.set('port', process.env.PORT || 3000);
 var server = app.listen(app.get('port'), function () {
     debug('Express server listening on port ' + server.address().port);
 });
+
+function Get(req, res)
+{
+  return res.json({ goodCall: true });
+}
+
+module.exports = server;
