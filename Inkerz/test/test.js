@@ -17,6 +17,7 @@ describe('Express Proxy', function ()
   })
 
   it('should make Express Get call', Express_Get);
+  it('should make Marvel API call via Express Proxy', Express_GetMarvel);
 });
 
 function MarvelAPI_Auth(done)
@@ -54,6 +55,26 @@ function Express_Get(done)
       callStatus = res.body.goodCall;
       expect(callStatus).to.equal(true);
       // Done
+      done();
+    });
+}
+
+function Express_GetMarvel(done)
+{
+  const
+    name = "Iron%20Man",
+    url = "/v1/public/characters?name=" + name;
+
+  this.timeout = 10000;
+  sp_request(server)
+    .get(url)
+    .set('Content-Type', 'application/json')
+    .expect('Content-Type', /json/)
+    .expect(200, function (err, res)
+    {
+      if (err) { return done(err); }
+      expect(res.body.code).to.be.equal(200);
+      expect(res.body.status).to.be.equal("Ok");
       done();
     });
 }

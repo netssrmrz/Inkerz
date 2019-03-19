@@ -6,6 +6,8 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var request = require('request');
+var crypto = require('crypto');
 
 var app = express();
 
@@ -17,6 +19,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.route("/v1/public").get(Get);
+app.route("/v1/public/*").get(Get_Characters);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // catch 404 and forward to error handler
@@ -56,9 +59,24 @@ var server = app.listen(app.get('port'), function () {
     debug('Express server listening on port ' + server.address().port);
 });
 
+module.exports = server;
+
 function Get(req, res)
 {
   return res.json({ goodCall: true });
 }
 
-module.exports = server;
+function Get_Characters(req, res)
+{
+  const
+    apiKey = "a4ce240a80425a2ba715c8baf78048b6",
+    ts = "1",
+    publicKey = "a4ce240a80425a2ba715c8baf78048b6",
+    privateKey = "4711f770abe38a3f232b6010017c06a1bc07aabd",
+    data = ts + privateKey + publicKey,
+    hash = crypto.createHash('md5').update(data).digest("hex"),
+    marvel_url = "https://gateway.marvel.com:443/v1/public",
+    url = req.url.replace("/v1/public", marvel_url) + "&apikey=" + apiKey + "&hash=" + hash + "&ts=" + ts;
+
+  request(url).pipe(res);
+}
