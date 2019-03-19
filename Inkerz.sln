@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "Inkerz", "Inkerz\Inkerz.njsproj", "{BD86EC64-BCA1-4B4E-8492-82A77DA79AAE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BD86EC64-BCA1-4B4E-8492-82A77DA79AAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD86EC64-BCA1-4B4E-8492-82A77DA79AAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD86EC64-BCA1-4B4E-8492-82A77DA79AAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD86EC64-BCA1-4B4E-8492-82A77DA79AAE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {627353C5-FF1B-4716-92FE-13CD0FF25C2D}
+	EndGlobalSection
+EndGlobal
