@@ -52,6 +52,8 @@
       table.On_First_Page = On_First_Page;
       table.On_Last_Page = On_Last_Page;
       table.Order_By = Order_By;
+      table.On_Search = On_Search;
+      table.On_Search_Clear = On_Search_Clear;
 
       document.getElementById("first_btn").onclick = () => { table.On_First_Page(); };
       document.getElementById("prev_btn").onclick = () => { table.On_Prev_Page(); };
@@ -59,6 +61,8 @@
       document.getElementById("last_btn").onclick = () => { table.On_Last_Page(); };
       document.getElementById("title_sort").onclick = () => { table.Order_By("title"); };
       document.getElementById("issue_sort").onclick = () => { table.Order_By("issueNumber"); };
+      document.getElementById("search_btn").onclick = () => { table.On_Search(); };
+      document.getElementById("clr_btn").onclick = () => { table.On_Search_Clear(); };
 
       table.Get_Page();
     }
@@ -96,6 +100,21 @@
       this.Get_Page();
     }
 
+    function On_Search()
+    {
+      this.title_starts_with = lib.If_Empty_Null(document.getElementById("title_filter").value);
+      this.issue_number = lib.To_Int(lib.If_Empty_Null(document.getElementById("issue_filter").value));
+      this.curr_page = 0;
+      this.Get_Page();
+    }
+
+    function On_Search_Clear()
+    {
+      document.getElementById("title_filter").value = null;
+      document.getElementById("issue_filter").value = null;
+      this.On_Search();
+    }
+
     function Order_By(field)
     {
       if (this.order_by === field)
@@ -116,14 +135,14 @@
       var offset;
 
       offset = this.curr_page * this.page_size;
-      ctx.Get_Comics(this.page_size, offset, this.order_by, thi.title_starts_with, this.issue_number, (res) => { this.Append_Comics(res); this.Update_Paging(); });
+      ctx.Get_Comics(this.page_size, offset, this.order_by, this.title_starts_with, this.issue_number, (res) => { this.Append_Comics(res); this.Update_Paging(); });
     }
 
     function Append_Comics(res)
     {
       var tr, td, body, c, comic, image;
 
-      if (res)
+      if (res && res.data)
       {
         this.Delete_Rows();
         this.total = res.data.total;
@@ -180,6 +199,12 @@
 </head>
 
 <body>
+  <div>
+    <div><span>Title</span><input id="title_filter" type="text" /></div>
+    <div><span>Issue #</span><input id="issue_filter" type="text" /></div>
+    <button id="clr_btn">Clear</button>
+    <button id="search_btn">Search</button>
+  </div>
   <div>
     Page <span id="curr_page"></span> of <span id="total_pages"></span>
     <button id="first_btn">First</button>

@@ -87,6 +87,29 @@ export function Get_Json(url, success_fn)
   }
 };
 
+export function If_Empty_Null(a)
+{
+  var res;
+
+  if (a != null && a != "")
+    res = a;
+
+  return res;
+}
+
+export function To_Int(str)
+{
+  var res = 0, int;
+
+  if (str != null)
+  {
+    int = parseInt(str);
+    if (!isNaN(int))
+      res = int;
+  }
+
+  return res;
+}
 function Append_Str(a, b, div)
 {
   var res;
