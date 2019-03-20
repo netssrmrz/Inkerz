@@ -33,11 +33,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="app.js" />
+    <Compile Include="public\lib.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="test\test.js">
       <SubType>Code</SubType>
     </Compile>
     <Content Include="package.json" />
     <Content Include="public\index.html" />
+    <Content Include="public\sort.svg" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="test\" />

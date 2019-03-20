@@ -18,8 +18,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.route("/v1/public").get(Get);
-app.route("/v1/public/*").get(Get_Characters);
+app.route("/v1/public").get(Get_Test);
+app.route("/v1/public/*").get(Get);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // catch 404 and forward to error handler
@@ -61,12 +61,12 @@ var server = app.listen(app.get('port'), function () {
 
 module.exports = server;
 
-function Get(req, res)
+function Get_Test(req, res)
 {
   return res.json({ goodCall: true });
 }
 
-function Get_Characters(req, res)
+function Get(req, res)
 {
   const
     apiKey = "a4ce240a80425a2ba715c8baf78048b6",
@@ -75,8 +75,15 @@ function Get_Characters(req, res)
     privateKey = "4711f770abe38a3f232b6010017c06a1bc07aabd",
     data = ts + privateKey + publicKey,
     hash = crypto.createHash('md5').update(data).digest("hex"),
-    marvel_url = "https://gateway.marvel.com:443/v1/public",
-    url = req.url.replace("/v1/public", marvel_url) + "&apikey=" + apiKey + "&hash=" + hash + "&ts=" + ts;
+    marvel_url = "https://gateway.marvel.com:443/v1/public";
+  var
+    url = req.url.replace("/v1/public", marvel_url);
+
+  if (url.includes("?"))
+    url = url + "&";
+  else
+    url = url + "?";
+  url = url + "apikey=" + apiKey + "&hash=" + hash + "&ts=" + ts;
 
   request(url).pipe(res);
 }

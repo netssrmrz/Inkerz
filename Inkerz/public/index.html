@@ -1,15 +1,206 @@
 ﻿<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
   <meta charset="utf-8" />
-  <title>Plant Animator - Home</title>
-</head>
-<body>
+  <title>Inkerz - Home</title>
+  <style>
+    body
+    {
+      background-color: white;
+      color: black;
+      font: normal 14px/22px Open Sans,Trebuchet MS,Helvetica,Arial,sans-serif;
+    }
+    .sort
+    {
+      width: 10px;
+      height: 10px;
+    }
+    .sort:hover
+    {
+      cursor: pointer;
+    }
+    button
+    {
+      cursor: pointer;
+    }
+  </style>
+  <script type="module">
+    import * as lib from "./lib.js";
 
+    var ctx = new lib.Ctx();
+
+    window.onload = Main;
+    function Main()
+    {
+      var table;
+
+      table = document.getElementById("comics_table");
+      table.page_size = 20;
+      table.curr_page = 0;
+      table.order_by = null;
+      table.title_starts_with = null;
+      table.issue_number = null;
+      table.Calc_Total_Pages = Calc_Total_Pages;
+      table.Get_Page = Get_Page;
+      table.Append_Comics = Append_Comics;
+      table.On_Prev_Page = On_Prev_Page;
+      table.On_Next_Page = On_Next_Page;
+      table.Delete_Rows = Delete_Rows;
+      table.Update_Paging = Update_Paging;
+      table.On_First_Page = On_First_Page;
+      table.On_Last_Page = On_Last_Page;
+      table.Order_By = Order_By;
+
+      document.getElementById("first_btn").onclick = () => { table.On_First_Page(); };
+      document.getElementById("prev_btn").onclick = () => { table.On_Prev_Page(); };
+      document.getElementById("next_btn").onclick = () => { table.On_Next_Page(); };
+      document.getElementById("last_btn").onclick = () => { table.On_Last_Page(); };
+      document.getElementById("title_sort").onclick = () => { table.Order_By("title"); };
+      document.getElementById("issue_sort").onclick = () => { table.Order_By("issueNumber"); };
+
+      table.Get_Page();
+    }
+
+    function On_Prev_Page()
+    {
+      if (this.curr_page - 1 > -1)
+      {
+        this.curr_page--;
+        this.Get_Page();
+      }
+    }
+
+    function On_Next_Page()
+    {
+      var total_pages;
+
+      total_pages = this.Calc_Total_Pages();
+      if (this.curr_page + 1 < total_pages)
+      {
+        this.curr_page++;
+        this.Get_Page();
+      }
+    }
+
+    function On_First_Page()
+    {
+      this.curr_page = 0;
+      this.Get_Page();
+    }
+
+    function On_Last_Page()
+    {
+      this.curr_page = this.Calc_Total_Pages() - 1;
+      this.Get_Page();
+    }
+
+    function Order_By(field)
+    {
+      if (this.order_by === field)
+        this.order_by = "-" + field;
+      else
+        this.order_by = field;
+      this.curr_page = 0;
+      this.Get_Page();
+    }
+
+    function Calc_Total_Pages()
+    {
+      return Math.ceil(this.total / this.page_size);
+    }
+
+    function Get_Page()
+    {
+      var offset;
+
+      offset = this.curr_page * this.page_size;
+      ctx.Get_Comics(this.page_size, offset, this.order_by, thi.title_starts_with, this.issue_number, (res) => { this.Append_Comics(res); this.Update_Paging(); });
+    }
+
+    function Append_Comics(res)
+    {
+      var tr, td, body, c, comic, image;
+
+      if (res)
+      {
+        this.Delete_Rows();
+        this.total = res.data.total;
+        body = this.querySelector("tbody");
+        for (c = 0; c < res.data.results.length; c++)
+        {
+          comic = res.data.results[c];
+
+          tr = document.createElement("tr");
+
+          td = document.createElement("td");
+          td.textContent = res.data.offset + c + 1;
+          tr.appendChild(td);
+
+          image = document.createElement("img");
+          image.src = comic.thumbnail.path+"/portrait_small."+comic.thumbnail.extension;
+          td = document.createElement("td");
+          td.appendChild(image);
+          tr.appendChild(td);
+
+          td = document.createElement("td");
+          td.textContent = comic.title;
+          tr.appendChild(td);
+
+          td = document.createElement("td");
+          td.textContent = comic.format;
+          tr.appendChild(td);
+
+          td = document.createElement("td");
+          td.textContent = comic.issueNumber;
+          tr.appendChild(td);
+
+          body.appendChild(tr);
+        }
+      }
+    }
+
+    function Delete_Rows()
+    {
+      var old_body, new_body;
+
+      new_body = document.createElement("tbody");
+
+      old_body = this.querySelector("tbody");
+      old_body.replaceWith(new_body);
+    }
+
+    function Update_Paging()
+    {
+      document.getElementById("curr_page").textContent = this.curr_page + 1;
+      document.getElementById("total_pages").textContent = this.Calc_Total_Pages();
+    }
+  </script>
+</head>
+
+<body>
+  <div>
+    Page <span id="curr_page"></span> of <span id="total_pages"></span>
+    <button id="first_btn">First</button>
+    <button id="prev_btn">Previous</button>
+    <button id="next_btn">Next</button>
+    <button id="last_btn">Last</button>
+  </div>
+  <table id="comics_table">
+    <thead>
+      <tr>
+        <td>#</td>
+        <td>Image</td>
+        <td>Title <img id="title_sort" src="sort.svg" class="sort" /></td>
+        <td>Format</td>
+        <td>Issue # <img id="issue_sort" src="sort.svg" class="sort" /></td>
+      </tr>
+    </thead>
+    <tbody></tbody>
+    <tfooter></tfooter>
+  </table>
+  <div>Icons made by <a href="https://www.flaticon.com/authors/dave-gandy" title="Dave Gandy">Dave Gandy</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
 </body>
-<ul>
-  <li><a href="sample1.html">Sample 1</a></li>
-  <li><a href="sample2.html">Sample 2</a></li>
-</ul>
+
 </html>
