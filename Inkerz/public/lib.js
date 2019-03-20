@@ -7,6 +7,16 @@ export class Ctx
     this.cache = [];
   }
 
+  Exists_In_Cache(key)
+  {
+    var res = false;
+
+    if (this.cache[key] != null)
+      res = true;
+
+    return res;
+  }
+
   Get_From_Cache(key)
   {
     return this.cache[key];
@@ -39,7 +49,7 @@ export class Ctx
 
   Get_Comics(limit, offset, orderBy, titleStartsWith, issueNumber, on_success_fn)
   {
-    var url_params, url = "/v1/public/comics";
+    var url_params, url = "/v1/public/comics", key, t;
 
     if (limit)
       url_params = Append_Str(url_params, "limit=" + limit, "&");
@@ -54,7 +64,18 @@ export class Ctx
     if (url_params)
       url = url + "?" + url_params;
 
-    Get_Json(url, on_success_fn);
+    t = this;
+    key = "Get_Comics." + url_params;
+    this.If_Not_In_Cache(key, Get_Data, on_success_fn);
+    function Get_Data()
+    {
+      Get_Json(url, Have_Data);
+      function Have_Data(data)
+      {
+        t.Insert_In_Cache(key, data);
+        on_success_fn(data);
+      }
+    }
   }
 
   Get_Comic(id) { }
@@ -110,6 +131,7 @@ export function To_Int(str)
 
   return res;
 }
+
 function Append_Str(a, b, div)
 {
   var res;
